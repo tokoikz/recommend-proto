@@ -31,6 +31,7 @@ export async function askApi(options: AskRequest): Promise<AskResponse> {
 }
 
 export async function chatApi(options: ChatRequest): Promise<AskResponse> {
+    console.dir(options);
     const response = await fetch("/chat", {
         method: "POST",
         headers: {

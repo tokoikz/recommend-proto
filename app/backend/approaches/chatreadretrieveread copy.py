@@ -70,7 +70,6 @@ Search query:
         top = overrides.get("top") or 3
         exclude_category = overrides.get("exclude_category") or None
         filter = "category ne '{}'".format(exclude_category.replace("'", "''")) if exclude_category else None
-
         # STEP 1: Generate an optimized keyword search query based on the chat history and the last question
         prompt = self.query_prompt_template.format(chat_history=self.get_chat_history_as_text(history, include_last_turn=False), question=history[-1]["user"])
         completion = openai.Completion.create(
@@ -79,11 +78,9 @@ Search query:
             temperature=0.0, 
             max_tokens=32, 
             n=1, 
-            stop=["\n"]
-        )
+            stop=["\n"])
         q = completion.choices[0].text
         print(q)
-
         # STEP 2: Retrieve relevant documents from the search index with the GPT optimized query
         if overrides.get("semantic_ranker"):
             r = self.search_client.search(q, 
@@ -113,7 +110,6 @@ Search query:
         else:
             prompt = prompt_override.format(sources=content, chat_history=self.get_chat_history_as_text(history), follow_up_questions_prompt=follow_up_questions_prompt)
         print(len(prompt),prompt)
-
         # STEP 3: Generate a contextual and content specific answer using the search results and chat history
         completion = openai.Completion.create(
             engine=self.chatgpt_deployment, 
@@ -121,18 +117,19 @@ Search query:
             temperature=overrides.get("temperature") or 0.0, 
             max_tokens=2048, 
             n=1, 
-            stop=["", ""]
-        )
+            stop=["<|im_end|>", "<|im_start|>"])
 
         return {"data_points": results, "answer": completion.choices[0].text, "thoughts": f"Searched for:<br>{q}<br><br>Prompt:<br>" + prompt.replace('\n', '<br>')}
-
+    
     def get_chat_history_as_text(self, history, include_last_turn=True, approx_max_tokens=1000) -> str:
         history_text = ""
         for h in reversed(history if include_last_turn else history[:-1]):
-            history_text = """user""" +"\n" + h["user"] + "\n" + """""" + "\n" + """assistant""" + "\n" + (h.get("bot") + """""" if h.get("bot") else "") + "\n" + history_text
+            history_text = """<|im_start|>user""" +"\n" + h["user"] + "\n" + """<|im_end|>""" + "\n" + """<|im_start|>assistant""" + "\n" + (h.get("bot") + """<|im_end|>""" if h.get("bot") else "") + "\n" + history_text
             if len(history_text) > approx_max_tokens*4:
                 break    
         return history_text
+
+
 
 class Approach1(ChatReadRetrieveReadApproach):
     prompt_prefix = """<|im_start|>system
@@ -161,19 +158,7 @@ Sources:
 <|im_end|>
 {chat_history}
 """
-    query_prompt_template = """以下は、これまでの会話の履歴と、商品に関するナレッジベースを検索して回答する必要がある、ユーザーからの新しい質問です。
-    会話と新しい質問に基づいて、検索クエリを作成します。
-    検索クエリには、引用元のファイル名や文書名（info.txtやdoc.pdfなど）を含めないでください。
-    検索キーワードに[]または<<>>内のテキストを含めないでください。
-
-Chat History:
-{chat_history}
-
-Question:
-{question}
-
-Search query:
-"""
+    query_prompt_template = """Approach1 query template here..."""
     follow_up_questions_prompt_content = """商品について、ユーザーが次に尋ねそうな非常に簡潔なフォローアップ質問を3つ作成する。
     質問を参照するには、二重の角括弧を使用します（例：<<徳川家康とは何をした人ですか?>>）。
     すでに聞かれた質問を繰り返さないようにしましょう。

@@ -1,6 +1,8 @@
 export const enum Approaches {
     RetrieveThenRead = "rtr",
     ReadRetrieveRead = "rrr",
+    ReadRetrieveRead2 = "rrr2",
+    ReadRetrieveRead3 = "rrr3",
     ReadDecomposeAsk = "rda"
 }
 

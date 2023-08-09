@@ -7,7 +7,7 @@ import styles from "./Chat.module.css";
 import { chatApi, Approaches, AskResponse, ChatRequest, ChatTurn } from "../../api";
 import { Answer, AnswerError, AnswerLoading } from "../../components/Answer";
 import { QuestionInput } from "../../components/QuestionInput";
-import { ExampleList } from "../../components/Example";
+import { ExampleList3 } from "../../components/Example/ExampleList3";
 import { UserChatMessage } from "../../components/UserChatMessage";
 import { AnalysisPanel, AnalysisPanelTabs } from "../../components/AnalysisPanel";
 import { SettingsButton } from "../../components/SettingsButton";
@@ -46,7 +46,7 @@ const Chat = () => {
             const history: ChatTurn[] = answers.map(a => ({ user: a[0], bot: a[1].answer }));
             const request: ChatRequest = {
                 history: [...history, { user: question, bot: undefined }],
-                approach: Approaches.ReadRetrieveRead,
+                approach: Approaches.ReadRetrieveRead3,
                 overrides: {
                     promptTemplate: promptTemplate.length === 0 ? undefined : promptTemplate,
                     excludeCategory: excludeCategory.length === 0 ? undefined : excludeCategory,
@@ -135,9 +135,9 @@ const Chat = () => {
                     {!lastQuestionRef.current ? (
                         <div className={styles.chatEmptyState}>
                             <SparkleFilled fontSize={"120px"} primaryFill={"rgba(115, 118, 225, 1)"} aria-hidden="true" aria-label="Chat logo" />
-                            <h1 className={styles.chatEmptyStateTitle}>体験種別横断レコメンデーション</h1>
-                            <h2 className={styles.chatEmptyStateSubtitle}>｛商品名：数字｝の形式で入力してください</h2>
-                            <ExampleList onExampleClicked={onExampleClicked} />
+                            <h1 className={styles.chatEmptyStateTitle}>Chat with your data</h1>
+                            <h2 className={styles.chatEmptyStateSubtitle}>Ask anything or try an example</h2>
+                            <ExampleList3 onExampleClicked={onExampleClicked} />
                         </div>
                     ) : (
                         <div className={styles.chatMessageStream}>
