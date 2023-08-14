@@ -9,8 +9,8 @@ export type ExampleModel = {
 
 const EXAMPLES: ExampleModel[] = [
     {
-        text: "香水A",
-        value: "香水A：10"
+        text: "うれしい、たのしい、大好き",
+        value: "うれしい、たのしい、大好き"
     },
     {
         text: "香水B",
